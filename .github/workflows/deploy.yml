@@ -6,8 +6,6 @@ on:
   pull_request:
     branches: ['main']
      
-  
-
 jobs:
  build:
    runs-on: ubuntu-latest
@@ -22,7 +20,9 @@ jobs:
 
    -name: install dependencies
    run: npm install --frozen-lockfile
-# in here we have to add another steps to build it then we wil move forward to the deploy part. since bef ore the deployment i have to check if the project is running perfectly or not
+
+   - name: build project
+     run: npm run build
 
 deploy:
   runs-on: ubuntu-latest
@@ -37,3 +37,18 @@ deploy:
 
   -name: install dependencies
   run: npm install --frozen-lockfile  
+
+  - name: configure ssh
+    run: |
+      echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+      chmod 600 ~/.ssh/id_rsa
+      ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+  - name: deploy to server
+    run: |
+      ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+        cd ~/projects/ci-cd-node  
+        git pull origin main
+        npm install --frozen-lockfile
+        npm  start
+      EOF
