@@ -20,8 +20,8 @@ jobs:
       - name: install dependencies
         run: npm install --frozen-lockfile
 
-      - name: build project
-        run: npm run build
+      # - name: build project
+      #   run: npm run build
 
   deploy:
     runs-on: ubuntu-latest
