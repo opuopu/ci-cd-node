@@ -1,4 +1,5 @@
 name: CI/CD Pipeline
+
 on:
   push:
     branches: ['main']
@@ -12,42 +13,44 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: install node js
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22.00
+          node-version: 20
 
-      - name: install dependencies
+      - name: Install dependencies
         run: npm install --frozen-lockfile
 
-      # - name: build project
+      # - name: Build project
       #   run: npm run build
 
   deploy:
     runs-on: ubuntu-latest
+    # needs: build
 
     steps:
       - uses: actions/checkout@v3
 
-      - name: install node js
+      - name: Install Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 22.00
+          node-version: 20
 
-      - name: install dependencies
+      - name: Install dependencies
         run: npm install --frozen-lockfile
 
-      - name: configure ssh
+      - name: Configure SSH
         run: |
-          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" | tr -d '\r' > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: deploy to server
+      - name: Deploy to server
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             cd ~/projects/ci-cd-node
             git pull origin main
             npm install --frozen-lockfile
-            npm start
+            pm2 restart your-app-name || pm2 start app.js --name your-app-name
           EOF
