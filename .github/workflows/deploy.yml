@@ -1,0 +1,39 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: ['main']
+     
+  pull_request:
+    branches: ['main']
+     
+  
+
+jobs:
+ build:
+   runs-on: ubuntu-latest
+
+   steps:
+   - uses: actions/checkout@v3
+
+   -name: install node js
+   uses: actions/setup-node@v3
+   with:
+    node-version: 22.00 
+
+   -name: install dependencies
+   run: npm install --frozen-lockfile
+# in here we have to add another steps to build it then we wil move forward to the deploy part. since bef ore the deployment i have to check if the project is running perfectly or not
+
+deploy:
+  runs-on: ubuntu-latest
+
+  steps:
+   - uses: actions/checkout@v3
+
+  -name: install node js
+  uses: actions/setup-node@v3
+  with:
+    node-version: 22.00 
+
+  -name: install dependencies
+  run: npm install --frozen-lockfile  
