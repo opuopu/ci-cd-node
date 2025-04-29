@@ -49,8 +49,8 @@ jobs:
       - name: Deploy to server
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            cd ~/projects/ci-cd-node
+            cd ~/project/ci-cd-node
             git pull origin main
             npm install --frozen-lockfile
-            pm2 restart your-app-name || pm2 start app.js --name your-app-name
+            npm run start
           EOF
