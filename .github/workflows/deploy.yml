@@ -2,53 +2,52 @@ name: CI/CD Pipeline
 on:
   push:
     branches: ['main']
-     
   pull_request:
     branches: ['main']
-     
+
 jobs:
- build:
-   runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-   steps:
-   - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-   -name: install node js
-   uses: actions/setup-node@v3
-   with:
-    node-version: 22.00 
+      - name: install node js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.00
 
-   -name: install dependencies
-   run: npm install --frozen-lockfile
+      - name: install dependencies
+        run: npm install --frozen-lockfile
 
-   - name: build project
-     run: npm run build
+      - name: build project
+        run: npm run build
 
-deploy:
-  runs-on: ubuntu-latest
+  deploy:
+    runs-on: ubuntu-latest
 
-  steps:
-   - uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
 
-  -name: install node js
-  uses: actions/setup-node@v3
-  with:
-    node-version: 22.00 
+      - name: install node js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22.00
 
-  -name: install dependencies
-  run: npm install --frozen-lockfile  
+      - name: install dependencies
+        run: npm install --frozen-lockfile
 
-  - name: configure ssh
-    run: |
-      echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
-      chmod 600 ~/.ssh/id_rsa
-      ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+      - name: configure ssh
+        run: |
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-  - name: deploy to server
-    run: |
-      ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-        cd ~/projects/ci-cd-node  
-        git pull origin main
-        npm install --frozen-lockfile
-        npm  start
-      EOF
+      - name: deploy to server
+        run: |
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+            cd ~/projects/ci-cd-node
+            git pull origin main
+            npm install --frozen-lockfile
+            npm start
+          EOF
