@@ -50,6 +50,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             export PATH=/root/.nvm/versions/node/v22.15.0/bin:\$PATH
+            export SHELL=/bin/bash
             cd ~/project/ci-cd-node
             git pull origin main
             npm install --frozen-lockfile
