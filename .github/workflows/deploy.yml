@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: ['main']
+    branches: ["main"]
   pull_request:
-    branches: ['main']
+    branches: ["main"]
 
 jobs:
   build:
@@ -20,9 +20,6 @@ jobs:
 
       - name: Install dependencies
         run: npm install --frozen-lockfile
-
-      # - name: Build project
-      #   run: npm run build
 
   deploy:
     runs-on: ubuntu-latest
@@ -46,13 +43,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
-        run: |
-          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            export PATH=/root/.nvm/versions/node/v22.15.0/bin:\$PATH
-            export SHELL=/bin/bash
-            cd ~/project/ci-cd-node
-            git pull origin main
-            npm install --frozen-lockfile
-            npm run start
-          EOF
+      - name: Upload deploy script
+        run: scp -i ~/.ssh/id_rsa ./deploy.sh ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/tmp/deploy.sh
+
+      - name: Run deploy script on server
+        run: ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} "bash /tmp/deploy.sh"
