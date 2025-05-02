@@ -7,5 +7,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Example app listesning on porst ${port}`);
+  console.log(`Example apps listesning on porst ${port}`);
 });
